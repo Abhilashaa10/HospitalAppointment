@@ -2,10 +2,8 @@ package com.hospital.demo.repository;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-import com.hospital.demo.Entity.Appointment;
+import com.hospital.demo.entity.Appointment;
 
 
-public interface AppointmentRepository extends JpaRepository<Appointment, Integer> {
-
-
+public interface AppointmentRepository extends JpaRepository<Appointment, Long> {
 }

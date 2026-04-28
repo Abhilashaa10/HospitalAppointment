@@ -1,7 +1,10 @@
 package com.hospital.demo.service;
 
-import org.springframework.stereotype.Service;
 import java.util.List;
+
+import org.springframework.stereotype.Service;
+
+import com.hospital.demo.dto.AppointmentDTO;
 import com.hospital.demo.entity.Appointment;
 import com.hospital.demo.repository.AppointmentRepository;
 
@@ -14,30 +17,43 @@ public class AppointmentService {
         this.repository = repository;
     }
 
-    public Appointment saveAppointment(Appointment appointment) {
-        appointment.setStatus("BOOKED");
-        return repository.save(appointment);
-    }
+    public AppointmentDTO saveAppointment(AppointmentDTO appointmentDTO) {
 
-    public List<Appointment> getAllAppointments() {
-        return repository.findAll();
-    }
+    Appointment appointment = mapToEntity(appointmentDTO);
 
-    public Appointment getAppointmentById(Long id){
-        return repository.findById(id)
-        .orElseThrow(() -> new RuntimeException("Appointment not found"));
-    }
+    appointment.setStatus("BOOKED");
 
-    public Appointment updateAppointment(Long id, Appointment updatedAppointment){
-        Appointment existingAppointment = repository.findById(id)
-        .orElseThrow(() -> new RuntimeException("Appointment not found"));
+    Appointment savedAppointment = repository.save(appointment);
 
-        existingAppointment.setPatientName(updatedAppointment.getPatientName());
-        existingAppointment.setDoctorName(updatedAppointment.getDoctorName());
-        existingAppointment.setAppointmentTime(updatedAppointment.getAppointmentTime());
-        
-return repository.save(existingAppointment);
+    return mapToDTO(savedAppointment);
+}
 
+    public List<AppointmentDTO> getAllAppointments() {
+    return repository.findAll()
+            .stream()
+            .map(this::mapToDTO)
+            .toList();
+}
+
+    public AppointmentDTO getAppointmentById(Long id) {
+    Appointment appointment = repository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Appointment not found"));
+
+    return mapToDTO(appointment);
+}
+
+   public AppointmentDTO updateAppointment(Long id, AppointmentDTO appointmentDTO) {
+
+    Appointment existingAppointment = repository.findById(id)
+            .orElseThrow(() -> new RuntimeException("Appointment not found"));
+
+    existingAppointment.setPatientName(appointmentDTO.getPatientName());
+    existingAppointment.setDoctorName(appointmentDTO.getDoctorName());
+    existingAppointment.setAppointmentTime(appointmentDTO.getAppointmentTime());
+
+    Appointment updatedAppointment = repository.save(existingAppointment);
+
+    return mapToDTO(updatedAppointment);
 }
 
 public void deleteAppointment(Long id){
@@ -45,5 +61,25 @@ public void deleteAppointment(Long id){
     .orElseThrow(() -> new RuntimeException("appointment not found"));
 
     repository.delete(appointment);
+}
+
+private Appointment mapToEntity(AppointmentDTO dto) {  //DTO → Entity  - Used when request comes in.
+    Appointment appointment = new Appointment();
+    // appointment.setId(dto.getId());
+    appointment.setPatientName(dto.getPatientName());
+    appointment.setDoctorName(dto.getDoctorName());
+    appointment.setAppointmentTime(dto.getAppointmentTime());
+    appointment.setStatus(dto.getStatus());
+    return appointment;
+}
+
+private AppointmentDTO mapToDTO(Appointment appointment) { //Entity → DTO - Used when response goes out.
+    AppointmentDTO dto = new AppointmentDTO();
+    dto.setId(appointment.getId());
+    dto.setPatientName(appointment.getPatientName());
+    dto.setDoctorName(appointment.getDoctorName());
+    dto.setAppointmentTime(appointment.getAppointmentTime());
+    dto.setStatus(appointment.getStatus());
+    return dto;
 }
 }

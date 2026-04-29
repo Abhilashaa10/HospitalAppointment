@@ -8,7 +8,7 @@ COPY backend/src ./src
 RUN mvn clean package -DskipTests
 
 # Stage 2: Run the jar
-FROM eclipse-temurin:17
+FROM eclipse-temurin:21
 
 WORKDIR /app
 COPY --from=build /app/target/*.jar app.jar

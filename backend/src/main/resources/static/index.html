@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Hospital App</title>
+</head>
+<body>
+  <h1>Appointment Form</h1>
+
+  <input id="patient" placeholder="Patient Name" />
+  <input id="doctor" placeholder="Doctor Name" />
+  <button onclick="save()">Save</button>
+
+  <script>
+    async function save() {
+      await fetch("/appointments", {
+        method: "POST",
+        headers: {"Content-Type": "application/json"},
+        body: JSON.stringify([{
+          patientName: document.getElementById("patient").value,
+          doctorName: document.getElementById("doctor").value,
+          appointmentTime: "2026-04-30T10:00:00"
+        }])
+      });
+      alert("Saved!");
+    }
+  </script>
+</body>
+</html>
